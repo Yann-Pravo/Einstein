@@ -1,0 +1,56 @@
+rm -f *.o ../src/source/*.o
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o testParseFile.o testParseFile.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o testGraph.o testGraph.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o testExportMap.o testExportMap.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o testCity.o testCity.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o testsRunner.o testsRunner.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o ../src/source/ExportMap.o ../src/source/ExportMap.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o ../src/source/City.o ../src/source/City.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o ../src/source/ParseFile.o ../src/source/ParseFile.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -c -o ../src/source/Graph.o ../src/source/Graph.c
+cc -Wall -fprofile-arcs -ftest-coverage -lm -o testsRunner testParseFile.o testGraph.o testExportMap.o testCity.o testsRunner.o ../src/source/ExportMap.o ../src/source/City.o ../src/source/ParseFile.o ../src/source/Graph.o -Lcu/ -lcu
+ -> ParseFile [IN PROGESS]
+    --> Running testGenFromFile...
+    --> Running testParseAllCities...
+    --> Running testParseCity...
+ -> ParseFile [DONE]
+
+ -> Graph [IN PROGESS]
+    --> Running testCreateMatrix_getDistance...
+    --> Running testShortestPath...
+ -> Graph [DONE]
+
+ -> City [IN PROGESS]
+    --> Running testCreateCity...
+ -> City [DONE]
+
+ -> ExportMap [IN PROGESS]
+    --> Running testGetPattern...
+    --> Running testExportMap...
+ -> ExportMap [DONE]
+
+
+==================================================
+|               |  failed  |  succeed  |  total  |
+|------------------------------------------------|
+| assertations: |       0  |       11  |     11  |
+| tests:        |       0  |        8  |      8  |
+| tests suites: |       0  |        4  |      4  |
+==================================================
+File '../src/source/Graph.c'
+Lines executed:47.74% of 155
+../src/source/Graph.c:creating 'Graph.c.gcov'
+
+File '../src/source/City.c'
+Lines executed:55.88% of 34
+../src/source/City.c:creating 'City.c.gcov'
+
+File '../src/source/ParseFile.c'
+Lines executed:86.49% of 37
+../src/source/ParseFile.c:creating 'ParseFile.c.gcov'
+
+File '../src/source/ExportMap.c'
+Lines executed:50.59% of 85
+../src/source/ExportMap.c:creating 'ExportMap.c.gcov'
+
+rm -f *.o ../src/source/*.o

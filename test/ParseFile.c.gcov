@@ -1,0 +1,154 @@
+        -:    0:Source:../src/source/ParseFile.c
+        -:    0:Graph:../src/source/ParseFile.gcno
+        -:    0:Data:../src/source/ParseFile.gcda
+        -:    0:Runs:5
+        -:    0:Programs:1
+        -:    1:/*
+        -:    2: _____ ___ _   _ ____ _____ _____ ___ _   _
+        -:    3:| ____|_ _| \ | / ___|_   _| ____|_ _| \ | |
+        -:    4:|  _|  | ||  \| \___ \ | | |  _|  | ||  \| |
+        -:    5:| |___ | || |\  |___) || | | |___ | || |\  |
+        -:    6:|_____|___|_| \_|____/ |_| |_____|___|_| \_|
+        -:    7:
+        -:    8:Einstein Is a New and Super-fast Traveler Engine for Intellectual Newbies.
+        -:    9:
+        -:   10:Coders:
+        -:   11:ca.raymond(at)free(dot)fr
+        -:   12:jerome.audoux(at)polytech.univ-montp2(dot)fr
+        -:   13:justine.ranc(at)hotmail(dot)fr
+        -:   14:yann.pravo(at)gmail(dot)com
+        -:   15:
+        -:   16:Repo: http://github.com/polytech-projet-ig3/r4
+        -:   17:*/
+        -:   18:
+        -:   19:#include "../headers/Graph.h"
+        -:   20:#include "../headers/ParseFile.h"
+        -:   21:#include "../headers/City.h"
+        -:   22:
+        -:   23:/*
+        -:   24:*	Construit le graphe en tant que structure (tab de villes, matrice, nb de villes)
+        -:   25:*	en appelant successivement les différentes fonctions de construction.
+        -:   26:*
+        -:   27:*	@param file, fichier formaté correctement (voir README)
+        -:   28:*		contient les villes, leur population, et les coordonnées géographiques.
+        -:   29:*/
+        1:   30:struct Graph* genFromFile(FILE *file, int nCities, float autonomy)
+        -:   31:{
+        -:   32:	int numbCities;
+        -:   33:	struct Graph *graphToReturn;
+        -:   34:	struct City *matrixCities;
+        -:   35:	float **matrix;
+        -:   36:
+        1:   37:	graphToReturn =(struct Graph*) malloc(sizeof(struct Graph));
+        -:   38:
+        1:   39:	numbCities = nbCities(file);
+        1:   40:	matrixCities = parseAllCities(file, numbCities);
+        -:   41:
+        1:   42:	if(nCities != -1)
+        -:   43:	{
+        1:   44:		quickSortPopulation(matrixCities, numbCities);
+        1:   45:		numbCities = nCities;
+        1:   46:		matrix = createMatrix(matrixCities, numbCities,autonomy);
+        -:   47:	}
+        -:   48:	else
+        -:   49:	{
+    #####:   50:		matrix = createMatrix(matrixCities, numbCities, autonomy);
+        -:   51:	}
+        -:   52:
+        1:   53:	graphToReturn->matrixCities = matrixCities;
+        1:   54:	graphToReturn->matrix = matrix;
+        1:   55:	graphToReturn->nbCities = numbCities;
+        -:   56:
+        1:   57:	return graphToReturn;
+        -:   58:}
+        -:   59:
+        -:   60:/*
+        -:   61:*	Compte le nombre de villes dans le fichier donné en paramètre,
+        -:   62:*	simplement en comptant le nombre de lignes du fichier.
+        -:   63:*
+        -:   64:*	@param fichier, fichier formaté correctement (voir README)
+        -:   65:*		contient les villes, leur population et leur coordonnées géographiques
+        -:   66:*	@return un entier correspondant au nombre de villes dans le fichier.
+        -:   67:*	@TODO gestion ligne vide
+        -:   68:*/
+        1:   69:int nbCities(FILE *file)
+        -:   70:{
+        1:   71:	int nbCities = 0;
+        -:   72:	int c;
+        2:   73:	while ((c = fgetc(file)) != EOF)
+        -:   74:	{
+    #####:   75:		if (c == '\n')
+        -:   76:		{
+    #####:   77:			nbCities++;
+        -:   78:		}
+        -:   79:	}
+        1:   80:	rewind(file);
+        -:   81:
+        1:   82:	return nbCities;
+        -:   83:}
+        -:   84:
+        -:   85:/*
+        -:   86:*	Extrait les villes du fichier passé en paramètre
+        -:   87:*	et les place dans un tableau pour être utilisé plus tard
+        -:   88:*
+        -:   89:*	@param file, fichier formaté correctement (voir README)
+        -:   90:*		contient les villes, leur population et leur coordonnées géographiques
+        -:   91:*	@return un tableau de villes extraites du fichier
+        -:   92:*/
+        2:   93:struct City* parseAllCities(FILE *file, int nbCities)
+        -:   94:{
+        -:   95:	struct City *matrixCities;
+        -:   96:	int i;
+        -:   97:	char *valreturn;
+        2:   98:	char *line = malloc(100 * sizeof(char));
+        2:   99:	matrixCities = malloc(nbCities * sizeof(struct City));
+        -:  100:
+        5:  101:	for (i = 0; i < nbCities; i++)
+        -:  102:	{
+        3:  103:		valreturn = fgets(line, 100, file);
+        3:  104:		matrixCities[i] = parseCity(line);
+        -:  105:	}
+        -:  106:
+        2:  107:	free(line);
+        -:  108:
+        2:  109:	return matrixCities;
+        -:  110:}
+        -:  111:
+        -:  112:/*
+        -:  113:*	Parse une ligne du fichier et extrait les informations relatives
+        -:  114:*	à la ville. Cette fonction ne doit être utilisé que lorsqu'on
+        -:  115:*	est sûr d'avoir affaire à une ligne contenant une ville.
+        -:  116:*
+        -:  117:*	@param line, une ligne du fichier, doit contenir une ville
+        -:  118:*	@return une ville fabriquée à partir des infos extraites
+        -:  119:*/
+        4:  120:struct City parseCity(char *line)
+        -:  121:{
+        -:  122:	struct City city;
+        -:  123:	char nameCity[50];
+        -:  124:	int populationCity;
+        -:  125:	float orientationNS;
+        -:  126:	float orientationEW;
+        -:  127:	char Longitude[5];
+        -:  128:	char NS;
+        -:  129:	char EW;
+        -:  130:
+        -:  131:	/* On extrait les sous chaines directement */
+        4:  132:	sscanf(line, "%[^,],%d,%f%c,%[^(E|W)]%c", nameCity, &populationCity, &orientationNS, &NS, Longitude, &EW);
+        -:  133:
+        4:  134:	orientationEW = atof(Longitude);
+        -:  135:
+        4:  136:	if(NS =='S')
+        -:  137:	{
+    #####:  138:		orientationNS = (-1) * orientationNS;
+        -:  139:	}
+        -:  140:
+        4:  141:	if(EW =='W')
+        -:  142:	{
+    #####:  143:		orientationEW = (-1) * orientationEW;
+        -:  144:	}
+        -:  145:
+        4:  146:	city = createCity(nameCity, populationCity, orientationNS, orientationEW);
+        -:  147:
+        4:  148:	return city;
+        -:  149:}

@@ -1,0 +1,11 @@
+-- ENONCE ANTLR --
+
+Pour le point numéro 5 il faut faire un petit module en utilisant ANTLR qui et capable de lire un fichier XML comme ceci:
+https://github.com/polytech-projet-ig3/projet/blob/master/france.xml.
+
+Il faut faire une grammaire 'entreexml.g' pour laquelle vous allez générer le code C et vous allez l’intégrer dans votre projet. La façon conseillée est de parser les donnée du fichier xml et de générer un fichier csv que vous pouvez ensuite utiliser dans votre program.
+
+Hint: il faut pas faire une grammaire trop détaillée; par exemple vous pouvez ignorer tout ce qui est à l'interior de '<Style>' et '</Style>'
+
+Pour tester avec d'autres fichiers vous pouvez aller sur le site http://www.world-gazetteer.com, vous choisissez un pays et après vous clickez sur "Download data for Google Earth".
+

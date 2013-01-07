@@ -1,0 +1,249 @@
+        -:    0:Source:../src/source/ExportMap.c
+        -:    0:Graph:../src/source/ExportMap.gcno
+        -:    0:Data:../src/source/ExportMap.gcda
+        -:    0:Runs:5
+        -:    0:Programs:1
+        -:    1:/*
+        -:    2: _____ ___ _   _ ____ _____ _____ ___ _   _ 
+        -:    3:| ____|_ _| \ | / ___|_   _| ____|_ _| \ | |
+        -:    4:|  _|  | ||  \| \___ \ | | |  _|  | ||  \| |
+        -:    5:| |___ | || |\  |___) || | | |___ | || |\  |
+        -:    6:|_____|___|_| \_|____/ |_| |_____|___|_| \_|
+        -:    7:
+        -:    8:Einstein Is a New and Super-fast Traveler Engine for Intellectual Newbies.
+        -:    9:
+        -:   10:Coders:
+        -:   11:ca.raymond(at)free(dot)fr
+        -:   12:jerome.audoux(at)polytech.univ-montp2(dot)fr
+        -:   13:justine.ranc(at)hotmail(dot)fr
+        -:   14:yann.pravo(at)gmail(dot)com
+        -:   15:
+        -:   16:Repo: http://github.com/polytech-projet-ig3/r4
+        -:   17:*/
+        -:   18:#include <stdio.h>
+        -:   19:#include <stdlib.h>
+        -:   20:#include <string.h>
+        -:   21:#include "../headers/City.h"
+        -:   22:#include "../headers/Graph.h"
+        -:   23:
+        -:   24:/*	
+        -:   25:*	Cherche un motif dans une chaîne de caractère donnée
+        -:   26:*	@param motif, tableau de caractère contenant le motif recherché
+        -:   27:*	@param str, tableau de caractère où l'on cherche le motif
+        -:   28:*	@return un entier, 0 si on n'a pas trouvé le motif cherché, 1 sinon
+        -:   29:*/
+       49:   30:int getPattern(char * motif, char * str)
+        -:   31:{
+       49:   32:	int i=0, pos=0;
+     1668:   33:	while(i<strlen(str))
+        -:   34:	{
+     1579:   35:		if(pos == 0)
+        -:   36:		{
+     1406:   37:			if(str[i] == motif[pos])
+        -:   38:			{
+       69:   39:				pos++;
+        -:   40:			}
+        -:   41:		}
+        -:   42:		else
+        -:   43:		{
+      173:   44:			if(pos >= strlen(motif)) 
+        -:   45:			{
+        9:   46:				return 1;
+        -:   47:			}
+      164:   48:			else if(str[i] == motif[pos])
+        -:   49:			{
+      104:   50:				pos++;
+        -:   51:			}
+        -:   52:			else
+        -:   53:			{
+       60:   54:				pos = 0;
+        -:   55:			}
+        -:   56:		}
+     1570:   57:		i++;
+        -:   58:	}
+       40:   59:	return 0;
+        -:   60:}
+        -:   61:
+        -:   62:/*	
+        -:   63:*	Affiche sur une carte les villes (au nombre de nbCities) (format HTML)
+        -:   64:*	@param matrixCities, tableau des villes
+        -:   65:*	@param matrix, tableau qui regroupe les distances entre chaques villes
+        -:   66:*	@param nbCities, nombre de villes que l'on veut afficher
+        -:   67:*	@return un entier, 0 si l'export s'est bien passé, -1 sinon
+        -:   68:*/
+        1:   69:int exportMap(struct City * matrixCities, float ** matrix, int nbCities)
+        -:   70:{
+        1:   71:	FILE* mapSource = fopen("map.html", "r");
+        1:   72:	FILE* mapOut = fopen("map-output.html", "w");
+        1:   73:	char str[100] ="";
+        1:   74:	int i =0, j, returnval = 0;
+        1:   75:	if (mapSource == NULL)
+        -:   76:	{
+    #####:   77:		printf("Le fichier source n'existe pas !\n");
+        -:   78:	}
+        -:   79:	else
+        -:   80:	{
+        -:   81:		/* on lit le fichier map jusqu'a coordinates */
+       16:   82:		while (!feof(mapSource) && !getPattern("coordinates",str) && (returnval == 0))
+        -:   83:		{
+       14:   84:			if (fgets(str,100,mapSource))
+        -:   85:			{
+       14:   86:				fprintf(mapOut,"%s",str);
+        -:   87:			}
+        -:   88:			else
+        -:   89:			{
+    #####:   90:				returnval = -1;
+        -:   91:			}
+        -:   92:		}
+        -:   93:		
+        -:   94:		/* on ajoute les villes */
+        4:   95:		for(i=0; i<nbCities; i++)
+        -:   96:		{
+        3:   97:			fprintf(mapOut,"[%d,%f,%f]",i+1,matrixCities[i].orientationNS,matrixCities[i].orientationEW);
+        3:   98:			if (i == nbCities) 
+        -:   99:			{
+    #####:  100:				fprintf(mapOut,"\n");
+        -:  101:			}
+        -:  102:			else
+        -:  103:			{
+        3:  104:				fprintf(mapOut,",\n");
+        -:  105:			}
+        -:  106:		}
+        1:  107:		fprintf(mapOut,"];\n");
+        -:  108:		
+        -:  109:		/* saute les ligne contenant les anciennes coordonnées */
+        9:  110:		while (!getPattern("edges",str) && (returnval == 0))
+        -:  111:		{
+        7:  112:			if (!fgets(str,100,mapSource))
+        -:  113:			{
+    #####:  114:				returnval = -1;
+        -:  115:			}
+        -:  116:		}
+        1:  117:		fprintf(mapOut,"%s",str);
+        -:  118:		
+        -:  119:		/* on ajoute les liens entres les villes */
+        4:  120:		for(i = 0; i<nbCities; i++)
+        -:  121:		{
+        6:  122:			for(j = i+1; j<nbCities; j++)
+        -:  123:			{
+        3:  124:				if (matrix[i][j] != -1)
+        -:  125:				{
+        -:  126:					
+        3:  127:					fprintf(mapOut,"[%d, %d],\n",i+1,j+1);
+        -:  128:					
+        -:  129:				}
+        -:  130:			}
+        -:  131:		}
+        1:  132:		fprintf(mapOut,"];\n");
+        -:  133:		
+        -:  134:		/* saute les lignes contenant les anciennes liaisons */
+        6:  135:		while (!getPattern("];",str) && (returnval == 0))
+        -:  136:		{
+        4:  137:			if (!fgets(str,100,mapSource))
+        -:  138:			{
+    #####:  139:				returnval = -1;
+        -:  140:			}
+        -:  141:		}
+        -:  142:		
+       62:  143:		while (!feof(mapSource) && (returnval == 0))
+        -:  144:		{
+       60:  145:			if (fgets(str,100,mapSource))
+        -:  146:			{
+       60:  147:				fprintf(mapOut,"%s",str);
+        -:  148:			}
+        -:  149:			else
+        -:  150:			{
+    #####:  151:				returnval = -1;
+        -:  152:			}
+        -:  153:		}
+        1:  154:		fclose(mapSource);
+        1:  155:		fclose(mapOut);
+        -:  156:	}
+        1:  157:	return returnval;
+        -:  158:}
+        -:  159:
+        -:  160:/*	
+        -:  161:*	Affiche sur une carte le chemin le plus court entre 2 villes
+        -:  162:*	@param g, est une matrice de n entier par n entier (représentant la distance entre 2 villes) où n représente le nombre de villes.
+        -:  163:*	@param path, tableau d'entiers contenant les indices des villes du chemin
+        -:  164:*	@return un entier, 0 si l'export s'est bien passé, -1 sinon
+        -:  165:*/
+    #####:  166:int exportMapPath(struct Graph g, int path[g.nbCities])
+        -:  167:{
+    #####:  168:	FILE* mapSource = fopen("map.html", "r");
+    #####:  169:	FILE* mapOut = fopen("map-output.html", "w");
+    #####:  170:	char str[100] ="";
+    #####:  171:	int i =0, returnval = 0;
+    #####:  172:	if (mapSource == NULL)
+        -:  173:	{
+    #####:  174:		printf("Le fichier source n'existe pas !\n");
+    #####:  175:		return -1;
+        -:  176:	}
+        -:  177:	else
+        -:  178:	{
+        -:  179:		/* on lit le fichier map jusqu'a coordinates */
+    #####:  180:		while (!feof(mapSource) && !getPattern("coordinates",str) && (returnval == 0))
+        -:  181:		{
+    #####:  182:			if (fgets(str,100,mapSource))
+        -:  183:			{
+    #####:  184:				fprintf(mapOut,"%s",str);
+        -:  185:			}
+        -:  186:			else
+        -:  187:			{
+    #####:  188:				returnval = -1;
+        -:  189:			}
+        -:  190:		}
+        -:  191:		
+        -:  192:		/* on ajoute les villes */
+    #####:  193:		i=0;
+    #####:  194:		while(path[i] != -1)
+        -:  195:		{
+    #####:  196:			fprintf(mapOut,"[%d,%f,%f],\n",i+1,g.matrixCities[path[i]].orientationNS,g.matrixCities[path[i]].orientationEW);
+    #####:  197:			i++;
+        -:  198:		}
+    #####:  199:		fprintf(mapOut,"];\n");
+        -:  200:		
+        -:  201:		/* saute les ligne contenant les anciennes coordonnées */
+    #####:  202:		while (!getPattern("edges",str) && (returnval == 0))
+        -:  203:		{
+    #####:  204:			if (!fgets(str,100,mapSource))
+        -:  205:			{
+    #####:  206:				returnval = -1;
+        -:  207:			}
+        -:  208:		}
+    #####:  209:		fprintf(mapOut,"%s",str);
+        -:  210:		
+        -:  211:		/* on ajoute les liens entres les villes */
+    #####:  212:		i = 1;
+    #####:  213:		while(path[i] != -1)
+        -:  214:		{
+    #####:  215:			fprintf(mapOut,"[%d, %d],\n",i,i+1);
+    #####:  216:			i++;
+        -:  217:		}
+    #####:  218:		fprintf(mapOut,"];\n");
+        -:  219:		
+        -:  220:		/* saute les lignes contenant les anciennes liaisons */
+    #####:  221:		while (!getPattern("];",str) && (returnval == 0))
+        -:  222:		{
+    #####:  223:			if (!fgets(str,100,mapSource))
+        -:  224:			{
+    #####:  225:				returnval = -1;
+        -:  226:			}
+        -:  227:		}
+        -:  228:		
+    #####:  229:		while (!feof(mapSource) && (returnval == 0))
+        -:  230:		{
+    #####:  231:			if (fgets(str,100,mapSource))
+        -:  232:			{
+    #####:  233:				fprintf(mapOut,"%s",str);
+        -:  234:			}
+        -:  235:			else
+        -:  236:			{
+    #####:  237:				returnval = -1;
+        -:  238:			}
+        -:  239:		}
+    #####:  240:		fclose(mapSource);
+    #####:  241:		fclose(mapOut);
+        -:  242:	}
+    #####:  243:	return returnval;
+        -:  244:}

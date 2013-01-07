@@ -1,0 +1,117 @@
+/*
+ _____ ___ _   _ ____ _____ _____ ___ _   _ 
+| ____|_ _| \ | / ___|_   _| ____|_ _| \ | |
+|  _|  | ||  \| \___ \ | | |  _|  | ||  \| |
+| |___ | || |\  |___) || | | |___ | || |\  |
+|_____|___|_| \_|____/ |_| |_____|___|_| \_|
+
+Einstein Is a New and Super-fast Traveler Engine for Intellectual Newbies.
+
+Coders:
+ca.raymond(at)free(dot)fr
+jerome.audoux(at)polytech.univ-montp2(dot)fr
+justine.ranc(at)hotmail(dot)fr
+yann.pravo(at)gmail(dot)com
+
+Repo: http://github.com/polytech-projet-ig3/r4
+*/
+
+
+I. Configuration
+
+Pour pouvoir compiler Einstein, vous aurez besoin de :
+gcc
+
+Si vous souhaitez lancer les Unit Tests, vous aurez aussi besoin de :
+gcov
+CU
+
+CU est livré avec Einstein et se trouve dans le répertoire "test".
+Vous devrez le compiler en vous déplaçant dans le répertoire ./test/cu et en lançant
+la commande "make". CU n'a pas été testé sous Windows.
+Vous devez ensuite vous placer dans le répertoire test et lancer la commande "make",
+ce qui génère un exécutable : testsRunner.
+Vous devrez aussi créer un répertoire "results" dans le répertoire "test".
+
+
+II. Installation
+
+Pour lancer les Unit Tests et le Code Coverage, il vous suffit d'exécuter
+"codeCoverage.sh" dans le répertoire "test".
+
+Une fois les tests passés, vous pouvez compiler Einstein en lançant la
+commande "make" dans le répertoire principal.
+
+
+III. Utilisation
+
+Vous pouvez utiliser Einstein pour afficher les N plus grandes villes,
+le plus court chemin entre deux villes ou afficher l'arbre aérien 
+couvrant minimal d'un ensemble de villes.
+
+L'option --help permet d'afficher l'aide.
+L'option -f permet de spécifier le fichier des villes (CSV).
+(Si le fichier d'entrée est un fichier XML, voir la partie IV. pour le convertir en CSV).
+S'il n'y a aucun fichier spécifié, le fichier d'entrée sera celui fourni de base (villes.csv)
+
+
+Dans le premier cas (afficher les N plus grandes villes),
+vous lancerez la commande suivante :
+
+./einstein -a FLOAT -b INT
+
+FLOAT : autonomie de l'avion
+INT : le nombre de villes à afficher
+	
+
+Dans le second cas (plus court chemin entre deux villes) :
+
+./einstein -a FLOAT -s
+ou ./einstein -sa FLOAT
+
+FLOAT : autonomie de l'avion
+
+
+Et dans le dernier cas (arbre couvrant minimal) :
+
+./einstein -a FLOAT -m INT
+
+FLOAT : autonomie de l'avion
+INT : le nombre de villes (classées par population décroissante)
+      pour réaliser l'arbre couvrant minimal
+
+
+IV. Utilisation du parser
+
+Le parser XML qui permet de transformer un fichier source de villes en fichier CSV 
+utilisable par l'application EINSTEIN est un module complémentaire. 
+Il se trouve dans le dossier "parser", qui contient une version compilé du parser
+pour la distribution Linux Ubuntu. Pour les autres systèmes il est nécessaire de 
+recompiler le parser en utilisant le makeFile, antlr doit être installé sur la machine.
+Pour lancer le parser il faut executer "./parser.out leNomDuFichier.xml", le fichier CSV 
+s'enregistrera dans le répertoire principal de l'application sous le nom de "villes-parse.csv".
+
+
+V. Problèmes et bugs connus
+
+L'affichage du fichier HTML généré avec de nombreuses villes (>500) (avec une autonomie critique (<=300)) peut s'avérer très lent mais ce bug n'est pas causé par einstein mais par la trop grande taille du fichier map-output qui fait bugger le navigateur.
+
+
+VI. Copyright
+
+WTFPL - Do What The Fuck You Want To Public License (http://sam.zoy.org/wtfpl/)
+
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+                   Version 2, December 2004 
+
+Copyright (C) 2004 Sam Hocevar <sam@hocevar.net> 
+
+Everyone is permitted to copy and distribute verbatim or modified 
+copies of this license document, and changing it is allowed as long 
+as the name is changed. 
+
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
+
+ 0. You just DO WHAT THE FUCK YOU WANT TO.
+

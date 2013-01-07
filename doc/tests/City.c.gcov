@@ -1,0 +1,139 @@
+        -:    0:Source:../src/source/City.c
+        -:    0:Graph:../src/source/City.gcno
+        -:    0:Data:../src/source/City.gcda
+        -:    0:Runs:5
+        -:    0:Programs:1
+        -:    1:/*
+        -:    2: _____ ___ _   _ ____ _____ _____ ___ _   _ 
+        -:    3:| ____|_ _| \ | / ___|_   _| ____|_ _| \ | |
+        -:    4:|  _|  | ||  \| \___ \ | | |  _|  | ||  \| |
+        -:    5:| |___ | || |\  |___) || | | |___ | || |\  |
+        -:    6:|_____|___|_| \_|____/ |_| |_____|___|_| \_|
+        -:    7:
+        -:    8:Einstein Is a New and Super-fast Traveler Engine for Intellectual Newbies.
+        -:    9:
+        -:   10:Coders:
+        -:   11:ca.raymond(at)free(dot)fr
+        -:   12:jerome.audoux(at)polytech.univ-montp2(dot)fr
+        -:   13:justine.ranc(at)hotmail(dot)fr
+        -:   14:yann.pravo(at)gmail(dot)com
+        -:   15:
+        -:   16:Repo: http://github.com/polytech-projet-ig3/r4
+        -:   17:*/
+        -:   18:
+        -:   19:#include "../headers/City.h"
+        -:   20:
+        -:   21:/*
+        -:   22:*	Création d'une ville à partir des paramètres donnés.
+        -:   23:*
+        -:   24:*	@param nameCity, Nom de la ville
+        -:   25:*	@param populationCity, Population de la ville
+        -:   26:*	@param orientationNS, Latitude de la ville
+        -:   27:*	@param orientationEW, Longitude de la ville
+        -:   28:*	@return une ville de structure City avec les params donnés
+        -:   29:*/
+        5:   30:struct City createCity(char* nameCity, int populationCity, float orientationNS, float orientationEW)
+        -:   31:{
+        -:   32:	struct City c;
+        5:   33:	strcpy(c.nameCity, nameCity);
+        5:   34:	c.orientationNS = orientationNS;
+        5:   35:	c.orientationEW = orientationEW;
+        5:   36:	c.populationCity = populationCity;
+        -:   37:	
+        5:   38:	return c;
+        -:   39:}
+        -:   40:
+        -:   41:/*
+        -:   42:*	Convertit un degré décimal en radian
+        -:   43:*
+        -:   44:*	@param deg, double représentant le degré à convertir
+        -:   45:*	@return un double, le radian correspondant au degré passé en paramètre
+        -:   46:*/
+       72:   47:double deg2rad(double deg)
+        -:   48:{
+       72:   49:	return (deg * PI / 180);
+        -:   50:}
+        -:   51:
+        -:   52:/*
+        -:   53:*	Convertit un radian en degré décimal
+        -:   54:*
+        -:   55:*	@param rad, double représentant le radian à convertir
+        -:   56:*	@return un double, le degré correspondant au radian passé en paramètre
+        -:   57:*/
+    #####:   58:double rad2deg(double rad)
+        -:   59:{
+    #####:   60:	return (rad * 180 / PI);
+        -:   61:}
+        -:   62:
+        -:   63:/*
+        -:   64:*	Calcul la distance entre 2 villes à partir de leur coordonnées.
+        -:   65:*
+        -:   66:*	@param c1, ville contenant le nom, la population et les coordonnées de la ville c1
+        -:   67:*	@param c2, ville contenant le nom, la population et les coordonnées de la ville c2
+        -:   68:*	@return un float, la distance entre les paramètres c1 et c2
+        -:   69:*/
+       18:   70:float distance(struct City c1, struct City c2)
+        -:   71:{
+       18:   72:	double R = 6371.0;
+        -:   73:	double deltaLat, deltaLong, a, c, s1, s2;
+        -:   74:	
+       18:   75:	deltaLat = deg2rad(c2.orientationNS - c1.orientationNS);
+       18:   76:	deltaLong = deg2rad(c2.orientationEW - c1.orientationEW);
+        -:   77:	
+       18:   78:	a = sin(deltaLat/2) * sin(deltaLat/2) + cos(deg2rad(c1.orientationNS)) * cos(deg2rad(c2.orientationNS)) * sin(deltaLong/2) * sin(deltaLong/2);
+       18:   79:	s1 = sqrt(a);
+       18:   80:	s2 = 1.0 - a;
+       18:   81:	s2 = sqrt(s2);
+       18:   82:	c = atan2(s1, s2);
+       18:   83:	c = 2 * c;
+       18:   84:	return R * c;
+        -:   85:	/*
+        -:   86:	float theta, dist;
+        -:   87:	theta = c1.orientationEW - c2.orientationEW;
+        -:   88:	dist = sin(deg2rad(c1.orientationNS)) * sin(deg2rad(c2.orientationNS)) + cos(deg2rad(c1.orientationNS)) * cos(deg2rad(c2.orientationNS)) * cos(deg2rad(theta));
+        -:   89:	dist = acos(dist);
+        -:   90:	dist = rad2deg(dist);
+        -:   91:	dist = dist * 60 * 1.1515;
+        -:   92:	return (dist * 1.609344);
+        -:   93:	*/
+        -:   94:} 
+        -:   95:
+        -:   96:/*
+        -:   97:*	Cherche une ville depuis une chaine de caractères dans un tableau de ville
+        -:   98:*
+        -:   99:*	@param txt le préfixe cherché, matrixCities le tableau de villes, nbCities le nombre de villes du tableau
+        -:  100:*	@return la position de la ville dans le tableau de ville si txt est le préfixe unique du nom d'une ville dans le tableau
+        -:  101:*	@return -1 si il n'y a aucune ville qui correspond à ce préfixe
+        -:  102:*	@return -2 si il y a plusieurs villes qui correspondent à la description
+        -:  103:*/
+    #####:  104:int searchCity(char * txt, struct City *matrixCities, int nbCities)
+        -:  105:{
+        -:  106:	int i;
+    #####:  107:	int cpt = 0;
+    #####:  108:	int val = -1;
+        -:  109:	
+    #####:  110:	for (i = 0; i < nbCities; i++)
+        -:  111:	{
+    #####:  112:		if(strncmp(txt, matrixCities[i].nameCity, strlen(txt)) == 0)
+        -:  113:		{
+    #####:  114:			val = i;
+    #####:  115:			cpt++;
+    #####:  116:			printf("%s\n",matrixCities[i].nameCity);
+        -:  117:		}
+        -:  118:	}
+        -:  119:	
+    #####:  120:	if (cpt == 0)
+        -:  121:	{
+    #####:  122:		return -1;
+        -:  123:	}
+    #####:  124:	else if (cpt > 1)
+        -:  125:	{
+    #####:  126:		return -2;
+        -:  127:	}
+        -:  128:	else
+        -:  129:	{
+    #####:  130:		return val;
+        -:  131:	}
+        -:  132:}
+        -:  133:	
+        -:  134:		
